@@ -56,27 +56,32 @@ func (c *Client) Groups() ([]*Group, error) {
 		return nil, err
 	}
 
-	t := r.Data.(map[string]interface{})["list2"]
+	t := r.Data.(map[string]interface{})
+	var groups []*Group
 
-	var res struct {
-		Code   int      `json:"result_code"`
-		Groups []*Group `json:"my_group"`
-	}
-	if err := json.Unmarshal([]byte(t.(string)), &res); err != nil {
-		return nil, err
+	for _, key := range []string{"list", "list2"} {
+		var res struct {
+			Code   int      `json:"result_code"`
+			Groups []*Group `json:"my_group"`
+		}
+		if err := json.Unmarshal([]byte(t[key].(string)), &res); err != nil {
+			return nil, err
+		}
+
+		if res.Code != 200 {
+			return nil, errors.New("invalid result code")
+		}
+
+		for _, g := range res.Groups {
+			g.Name = strings.TrimSpace(g.Name)
+			g.UnitName = strings.TrimSpace(g.UnitName)
+			g.FullName = strings.TrimSpace(g.FullName)
+		}
+
+		groups = append(groups, res.Groups...)
 	}
 
-	if res.Code != 200 {
-		return nil, errors.New("invalid result code")
-	}
-
-	for _, g := range res.Groups {
-		g.Name = strings.TrimSpace(g.Name)
-		g.UnitName = strings.TrimSpace(g.UnitName)
-		g.FullName = strings.TrimSpace(g.FullName)
-	}
-
-	return res.Groups, nil
+	return groups, nil
 }
 
 func (c *Client) TraineeInfo(group *Group) (*TraineeInfo, error) {
