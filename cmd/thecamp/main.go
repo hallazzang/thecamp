@@ -87,6 +87,11 @@ func selectGroup() {
 }
 
 func sendLetter() {
+	if group == nil {
+		fmt.Println(promptui.IconWarn, "No group is selected. Select group first")
+		return
+	}
+
 	aborted, title, err := inputPrompt("Title", false)
 	if err != nil {
 		panic(err)
@@ -183,7 +188,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	} else if !suc {
-		fmt.Println("login failed")
+		fmt.Println(promptui.IconBad, "Login failed")
 		return
 	}
 
