@@ -2,6 +2,8 @@
 
 TheCamp(http://www.thecamp.or.kr/) HTTP client &amp; tools
 
+[![asciicast](https://asciinema.org/a/209732.svg)](https://asciinema.org/a/209732)
+
 ## Installation
 
 ```
